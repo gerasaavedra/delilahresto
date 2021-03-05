@@ -27,4 +27,7 @@ brindará toda la estructura.
 
 
 
-## :rocket: :rocket:
+## :rocket: :rocket: Inicia el Servidor
+Posicionate en tu directorio desde una terminal y ejecuta el siguiente Script:
+
+*`$ npm run dev`*
