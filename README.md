@@ -5,6 +5,8 @@ Proyecto número 3 de la carrera de DWFS en Acamica
 
 ## Recursos y tecnologías utilizadas
 
+*
+
 
 ## :computer: - Instalación
 Clona el proyecto desde una terminal
