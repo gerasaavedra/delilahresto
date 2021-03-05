@@ -1,0 +1,507 @@
+openapi: 3.0.1
+info:
+  title: Delilah Resto
+  description: API para restaurante de comida. Como cliente, podras registrarte, ver el listado de nuestros productos y realizar una orden. Los administradores del restaurante tienen la posibilidad de recibir pedidos y actualizarlos.
+  contact: 
+    name: Gerardo Saavedra
+    email: ger.r.saavedra@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+  
+  
+paths:
+  /registration:
+    
+    post:
+      tags:
+      - user
+      summary: Permite a los usuarios generar una cuenta de acceso al sitio.
+      operationId: userId
+      requestBody:
+        description: El usuario brindará un username, passsword, adress, fullname y admin.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                  username:
+                    type: string
+                    example: "Gera"
+                  password:
+                    type: string
+                  adress:
+                    type: string
+                    example: "Sipe Sipe 1592"
+                  fullname:
+                    type: string
+                    example: "Juan Perez"
+                  admin:
+                    type: boolean
+                    example: false
+                    description: Puede indicarlo como true para tener privilegios de ADMIN 
+      responses:
+        200:
+          description: El usuario se registro correctamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    operation:
+                      type: string
+                      example: Successful Operation
+                    msg:
+                      type: string
+                      example: El usuario ${username} se registro correctamente
+        400:
+          description: Los datos ingresados son incorrectos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    msg:
+                      type: string
+                      example: El campo username esta vacio
+        406:
+          description: Ocurrió un error, por favor intenta nuevamente.
+                  
+
+  /login:
+    post:
+      tags:
+      - user
+      summary: Acceso directo al sitio.
+      operationId: login
+      requestBody:
+        description: El usuario podrá acceder al sitio mediante su <username> y <password> previamente registrado.
+        content:
+          application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "Gera"
+                  password:
+                    type: string
+                    minLength: 8
+        required: true
+      responses:
+        200:
+          description: Acceso garantizado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    msg:
+                      type: string
+                      example: Acceso garantizado!
+                    User:
+                      type: string
+                      example: Juan Perez
+                    access_token:
+                      type: string
+                      
+        400:
+          description: Por favor ingrese Username y Password.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    status:
+                      type: string
+                      example: 404
+                    msg:
+                      type: string
+                      example: Por favor ingrese Username y Password!
+          
+        404:
+          description: Usuario inexistente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    status:
+                      type: string
+                      example: 404
+                    msg:
+                      type: string
+                      example: Usuario no encontrado!
+          
+        401:
+          description: Contraseña inválida.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    status:
+                      type: string
+                      example: 404
+                    msg:
+                      type: string
+                      example: Contraseña inválida!
+                            
+  /authenticate:
+    get:
+      security:
+      - bearerAuth: []
+      tags:
+      - user
+      description: El usuario deberá indicar su token obtenido mediante el proceso de login.
+      
+              
+      responses:
+        200:
+          description: Acceso garantizado
+        401:
+          description: Invalid token
+    
+  /products:
+    post:
+      security:
+      - bearerAuth: []
+      tags:
+      - products
+      summary: Crear nuevo producto.
+      operationId: productId
+      
+      requestBody:
+        description: Añade un nuevo producto a la lista existente
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  product_name:
+                    type: string
+                    example: "Ensalada Rusa"
+                  price:
+                    type: string
+                    example: "450"
+                  available:
+                    type: boolean
+                    example: true
+        
+      responses:
+        200:
+          description: Se agregó nuevo producto a la lista de productos
+        406:
+          description: Ocurrió un error
+
+
+    get:
+      security:
+      - bearerAuth: []
+      tags:
+      - products
+      summary: Obten la lista completa de productos
+      operationId: productsId
+      
+      
+      responses:
+        200:
+          description: Operación Exitosa
+        404:
+          description: Ocurrió un error
+          
+          
+    put:
+      security:
+      - bearerAuth: []
+      tags:
+      - admin
+      summary: Modifica un producto
+      description: Permite modificar la descripción de un producto
+      requestBody:
+        description: El usuario ADMIN puede actualizar el nombre y precio de un producto mediante su id
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                properties:
+                  id:
+                    type: string
+                    example: "1"
+                  product_name:
+                    type: string
+                    example: "Ensalada Rusa"
+                  price:
+                    type: string
+                    example: "600"
+      responses:
+        200:
+          description: Lista de productos actualizada
+        400:
+          description: El id ingresado no corresponde a un producto en la lista.
+        
+    
+  /products/:id:
+    delete:
+      security:
+      - bearerAuth: []
+      tags:
+      - admin
+      summary: Elimina un producto
+      description: Permite eliminar un producto por su id
+      parameters:
+      - in: query
+        name: id
+        required: true
+        description: código de identificación del producto
+        schema:
+          type: number
+          example: 5
+      responses:
+        200:
+          description: Producto eliminado correctamente
+        404:
+          description: El Id ingresado no existe en el listado de Productos
+      
+
+  /orders:
+    post:
+      security:
+      - bearerAuth: []
+      tags:
+      - orders
+      summary: Genera una nueva orden
+      description: Crea una nueva orden ingresando el/los id/s de el/los producto/s separados por coma.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  id:
+                    type: string
+                    example: "3, 1, 2, 5"
+      responses:
+        200:
+          description: Operación Exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    msg:
+                      type: string
+                      example: Successful Operation
+                    total_products:
+                      type: string
+                      example: "4"
+                    total_price:
+                      type: string
+                      example: "1400"
+        511:
+          description: Network Authentication Required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    msg:
+                      type: string
+                      example: Debes iniciar seción para realizar una orden
+                      
+  
+  /order_status:
+    put:
+      security:
+      - bearerAuth: []
+      tags:
+      - admin
+      summary: Actualiza el estado de una orden
+      description: Modifica el estado de una orden mediante su id y brindando el nuevo estado
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  id:
+                    type: string
+                    example: "3"
+                  order_status:
+                    type: string
+                    example: "ready"
+                    default: "in_progress"
+      responses:
+        200:
+          description: Operación Exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    msg:
+                      type: string
+                      example: Se modifico correctamente el estado de la orden.
+                    new_status:
+                      type: string
+                      example: "ready"
+        406:
+          description: Estado inválido, por favor revisa la documentación para mayor información.
+
+  
+  /account_settings:
+    get:
+      security:
+      - bearerAuth: []
+      tags:
+      - user
+      summary: Datos del usuario
+      description: Obtiene todos los datos personales del usuario logueado
+      
+      responses:
+        200:
+          description: Operación Exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    id:
+                      type: string
+                      example: "1"
+                    adress:
+                      type: string
+                      example: "Sipe Sipe 1592"
+                    password:
+                      type: string
+                    fullname:
+                      type: string
+                      example: "Juan Perez"
+                    username:
+                      type: string
+                      example: "Gera"
+                    admin:
+                      type: number
+                      example: 0
+                      default: 0 = false / 1 = true
+        406:
+          description: Por favor inicia sesión para realizar cualquier operación.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    status:
+                      type: string
+                      example: 406
+                    msg:
+                      type: string
+                      example: Por favor inicia sesión para realizar cualquier operación.
+  
+  
+  /my_orders:
+    get:
+      security:
+      - bearerAuth: []
+      tags:
+      - user
+      summary: Listado de ordenes
+      description: Obtiene el listado de ordenes realizadas por el usuario logueado
+      responses:
+        200:
+          description: Operación Exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      example: "6"
+                    user_id:
+                      type: string
+                      example: "2"
+                    total_products:
+                      type: number
+                      example: 4
+                    total_price:
+                      type: string
+                      example: "1560"
+                    status:
+                      type: string
+                      example: "in_progress"
+        406:
+          description: Por favor inicia sesión para realizar cualquier operación.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    status:
+                      type: string
+                      example: 406
+                    msg:
+                      type: string
+                      example: Por favor inicia sesión para realizar cualquier operación.
+  
+  
+  /all_orders:
+    get:
+      security:
+      - bearerAuth: []
+      tags: 
+      - admin
+      summary: Listado historico de ordenes
+      description: Permite a un usuario ADMIN ver todas las ordenes realizadas por los clientes
+      responses:
+        200:
+          description: Operación Exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    order_id:
+                        type: string
+                        example: "9"
+                    user_id:
+                        type: string
+                        example: "2"
+                    total_products:
+                        type: number
+                        example: 4
+                    total_price:
+                        type: string
+                        example: "1560"
+                    status:
+                        type: string
+                        example: "in_progress"
+        406:
+          description: Por favor inicia sesión para realizar cualquier operación.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    status:
+                      type: string
+                      example: 406
+                    msg:
+                      type: string
+                      example: Por favor inicia sesión para realizar cualquier operación.
+            
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
