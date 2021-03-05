@@ -25,7 +25,7 @@ Clona el proyecto desde una terminal
 ## :bulb: Dependencias
 Instala las dependencias necesarias para el correcto funcionamiento
 
-*`$ npm install`*
+*`     npm install    `*
 
 
 
@@ -40,7 +40,7 @@ brindará toda la estructura.
 ## :rocket: :rocket: Inicia el Servidor
 Posicionate en tu directorio desde una terminal y ejecuta el siguiente Script:
 
-*`$ npm run dev`*
+*`    npm run dev    `*
 
 
 
