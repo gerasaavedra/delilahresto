@@ -44,3 +44,5 @@ INSERT INTO products (product_name, price, available) VALUES ('Ensalada veggie',
 INSERT INTO products (product_name, price, available) VALUES ('Focaccia', '300', 1);
 INSERT INTO products (product_name, price, available) VALUES ('Sandwich focaccia', '440', 1);
 INSERT INTO products (product_name, price, available) VALUES ('Ensalada focaccia', '700', 1);
+
+INSERT INTO users (adress, password, fullname, username, admin) VALUES ('Calle falsa 123', '12345678', 'Juan Perez', 'Juani', TRUE);
