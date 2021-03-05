@@ -14,6 +14,8 @@ Proyecto número #3 de la carrera de DWFS en Acamica
 * Postman - manejo de endopoints y testing
 * Swagger bajo los estándares de [Open API Specification](https://swagger.io/specification/)
 
+Objetivo: desarrollar el backend de una app de pedidos de comida, generando la arquitectura, bases de datos relacionales, endpoints funcionales y documentación.
+
 
 ## :computer: - Instalación
 Clona el proyecto desde una terminal
