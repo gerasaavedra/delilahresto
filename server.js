@@ -257,7 +257,7 @@ app.post('/registration', singUp, passwordLength, preExistingUser, async(req, re
             msg: `El usuario ${username} se registro correctamente.`
         });
     } catch (error) {
-        res.status(406).send("Ocurrió un error, por favor intenta nuevamente.");
+        res.status(406).send("Ocurrió un error, por favor verifica los datos e intenta nuevamente.");
     };
 });
 
