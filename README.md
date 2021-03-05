@@ -18,7 +18,7 @@ Proyecto número #3 de la carrera de DWFS en Acamica
 ## :computer: - Instalación
 Clona el proyecto desde una terminal
 
-*`$ git clone`*
+*`$ git clone https://github.com/gerasaavedra/delilahresto.git`*
 
 
 
