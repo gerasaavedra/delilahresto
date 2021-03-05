@@ -23,7 +23,7 @@ Instala las dependencias necesarias para el correcto funcionamiento
 Utiliza el archivo *`delilahresto.sql`* para importarlo en tu cliente de Base de Datos,  el mismo
 brindará toda la estructura.
 
-:bangbang: Recuerda modificar el archivo *`db.js`* con los datos de tu entorno.
+:bangbang: Recuerda modificar el archivo *`config/db.js`* con los datos de tu entorno.
 
 
 
@@ -35,3 +35,7 @@ Posicionate en tu directorio desde una terminal y ejecuta el siguiente Script:
 
 
 ## :checkered_flag: :checkered_flag: Todo listo para utilizar el Sistema :bangbang:
+
+
+
+## :books: Documentación  :nerd_face:
