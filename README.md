@@ -5,7 +5,14 @@ Proyecto número 3 de la carrera de DWFS en Acamica
 
 ## Recursos y tecnologías utilizadas
 
-*
+* JavaScript
+* Node JS
+* Express js
+* Sequelize (ORM)
+* MySQL 
+* JWT para autenticación via Token
+* Postman - manejo de endopoints y testing
+* Swagger bajo los estándares de [Open API Specification](https://swagger.io/specification/)
 
 
 ## :computer: - Instalación
@@ -42,5 +49,5 @@ Posicionate en tu directorio desde una terminal y ejecuta el siguiente Script:
 
 
 ## :open_book:: Documentación  :nerd_face:
-Revisa el archivo *`spec.yml`*  donde encontrarás los servicios disponibles y
+Revisa el archivo *`api-docs.yaml`*  donde encontrarás los servicios disponibles y
 sus respectivos end points.
