@@ -5,7 +5,14 @@ Proyecto número 3 de la carrera de DWFS en Acamica
 
 
 
-## 1 - Instalación :computer:
+## :computer: - Instalación
 Clona el proyecto desde una terminal
 
 *`$ git clone`*
+
+
+
+## :bulb: Dependencias
+Instala las dependencias necesarias para el correcto funcionamiento
+
+*`$ npm install`*
