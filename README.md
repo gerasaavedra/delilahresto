@@ -16,3 +16,11 @@ Clona el proyecto desde una terminal
 Instala las dependencias necesarias para el correcto funcionamiento
 
 *`$ npm install`*
+
+
+
+## :bar_chart: Data Base
+Utiliza el archivo *`delilahresto.sql`* para importarlo en tu cliente de Base de Datos,  el mismo
+brindará toda la estructura.
+
+:bangbang: Recuerda modificar el archivo *`db.js`* con los datos de tu entorno.
