@@ -53,3 +53,7 @@ Posicionate en tu directorio desde una terminal y ejecuta el siguiente Script:
 ## :open_book:: Documentación  :nerd_face:
 Revisa el archivo *`api-docs.yaml`*  donde encontrarás los servicios disponibles y
 sus respectivos end points.
+
+## Endpoints para test de la App
+
+[Postaman Documentation](https://documenter.getpostman.com/view/13894455/Tz5jfg2p)
