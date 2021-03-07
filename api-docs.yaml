@@ -81,7 +81,7 @@ paths:
       summary: Acceso directo al sitio.
       operationId: login
       requestBody:
-        description: El usuario podrá acceder al sitio mediante su <username> y <password> previamente registrado.
+        description: El usuario podrá acceder al sitio mediante su username y password previamente registrado.
         content:
           application/json:
               schema:
