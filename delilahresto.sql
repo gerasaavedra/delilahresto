@@ -2,20 +2,6 @@ DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
 
-
-CREATE TABLE `orders` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `total_products` int(11) DEFAULT NULL,
-  `total_price` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT 'in_progress',
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-);
-
-
-
 CREATE TABLE `products` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `product_name` varchar(255) DEFAULT NULL,
@@ -34,6 +20,17 @@ CREATE TABLE `users` (
   `admin` tinyint(1) DEFAULT '0',
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `username` (`username`)
+);
+
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `total_products` int(11) DEFAULT NULL,
+  `total_price` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT 'in_progress',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );
 
 
