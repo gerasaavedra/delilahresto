@@ -81,7 +81,7 @@ paths:
       summary: Acceso directo al sitio.
       operationId: login
       requestBody:
-        description: El usuario podrá acceder al sitio mediante su username y password previamente registrado.
+        description: El usuario podrá acceder al sitio mediante su <username> y <password> previamente registrado.
         content:
           application/json:
               schema:
@@ -316,6 +316,113 @@ paths:
                       type: string
                       example: Debes iniciar seción para realizar una orden
                       
+                      
+  /order/:id:
+    delete:
+      security:
+      - bearerAuth: []
+      tags:
+      - admin
+      summary: Elimina una Orden
+      description: Permite eliminar una Orden por su id
+      parameters:
+      - in: query
+        name: id
+        required: true
+        description: código de identificación de la Orden
+        schema:
+          type: number
+          example: 5
+          
+      responses:
+        200:
+          description: La Orden fue eliminada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    msg:
+                      type: string
+                      example: La Orden fue eliminada correctamente
+        404:
+          description: La Orden ingresada no existe en el listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    msg:
+                      type: string
+                      example: La Orden ingresada no existe en el listado
+                      
+                      
+    get:
+      security:
+      - bearerAuth: []
+      tags:
+      - admin
+      summary: Obtiene una Orden por su id
+      description: Permite a un usuario ADMIN obtener el detalle de una Orden
+      parameters:
+      - in: query
+        name: id
+        required: true
+        description: código de identificación de la Orden
+        schema:
+          type: number
+          example: 45
+          
+      responses:
+        200:
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resumen:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 43
+                      user_id:
+                        type: number
+                        example: 2
+                      total_products:
+                        type: number
+                        example: 4
+                      total_price:
+                        type: string
+                        example: 1650
+                      status:
+                        type: string
+                        example: in_progress
+                  order_details:
+                    type: array
+                    items:
+                      properties:
+                        product_name:
+                          type: string
+                          example: Hamburguesa Clasica
+                        product_price:
+                          type: string
+                          example: 350
+                      
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Ocurrió un error! Verifica los datos y vuelve a intentarlo
+                        
+                  
+
   
   /order_status:
     put:
@@ -324,7 +431,7 @@ paths:
       tags:
       - admin
       summary: Actualiza el estado de una orden
-      description: Modifica el estado de una orden mediante su id y brindando el nuevo estado
+      description: Modifica el estado de una orden mediante su id y brindando el nuevo estado. Se permiten únicamente dos estados - "ready" - "in_progress"
       requestBody:
         content:
           application/json:
