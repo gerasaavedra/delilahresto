@@ -15,6 +15,7 @@ import Products from './models/Products.js';
 import Users from './models/Users.js';
 import Login from './models/Login.js';
 import Orders from './models/Orders.js';
+import OrderDetails from './models/OrderDetails.js';
 
 
 const app = express();
@@ -190,7 +191,7 @@ async function verifyProductId(req, res, next) {
 
 async function verifyOrderId(req, res, next) {
 
-    const id = req.body.id;
+    const id = req.body.id || req.params.id;
     const orderToUpdate = await Orders.findOne({ where: { id: `${id}` } });
 
     if (!orderToUpdate) {
@@ -229,7 +230,13 @@ function acceptedStatuses(req, res, next) {
     } else if (status === "ready") {
         next();
     } else {
-        res.status(406).send("Estado inválido, por favor revisa la documentación para mayor información.");
+        res.status(406).json({
+            msg: "Estado inválido, por favor revisa la documentación para mayor información.",
+            availables_status: {
+                inProgress: "in_progress",
+                orderReady: "ready"
+            }
+        });
     };
 };
 
@@ -402,15 +409,17 @@ app.post('/order', verifySessionStatus, async(req, res) => {
 
     let productsId = req.body.products_id;
 
-    // convierte array de str a int
-    let productsList = productsId.split(',').map(function(item) {
-        return parseInt(item, 10);
-    });
-
-    // cantidad de productos en la orden
-    let numberOfProducts = productsList.length;
-
     try {
+
+        // convierte array de str a int
+        let productsList = productsId.split(',').map(function(item) {
+            return parseInt(item, 10);
+        });
+
+
+        // cantidad de productos en la orden
+        let numberOfProducts = productsList.length;
+
         // SELECT * FROM users where id in (1,2,3,4,5);
         let order = await Products.findAll({
             where: {
@@ -418,21 +427,13 @@ app.post('/order', verifySessionStatus, async(req, res) => {
             }
         });
 
-
         let total = [];
-        let ticket = []
 
-        // Obtenemos el detalle de la orden
         let orderDetails = order.forEach(order => {
             let productId = order.id;
             let productName = order.product_name;
             let price = order.price;
             total.push(order.price);
-            ticket.push({
-                "productName": productName,
-                "price": price
-            });
-            console.log(productId, productName, price);
         });
 
         // Convertimos el array de str a int
@@ -442,14 +443,37 @@ app.post('/order', verifySessionStatus, async(req, res) => {
         let numbers = orderPrice;
         let totalOrderPrice = numbers.reduce((a, b) => a + b, 0);
 
-        console.log("Total: ", totalOrderPrice);
+        const newOrder = await Orders.create({
+            user_id: currentSession,
+            total_products: `${numberOfProducts}`,
+            total_price: `${totalOrderPrice}`
+        });
+
+        let newOrderId = newOrder.null;
+
+
+        let ticket = [];
 
         if (currentSession != undefined) {
-            // Guardamos la orden el la DB
-            const newOrder = Orders.create({
-                user_id: currentSession,
-                total_products: `${numberOfProducts}`,
-                total_price: `${totalOrderPrice}`
+            let saveOrderDetails = order.forEach(order => {
+                let productId = order.id;
+                let productName = order.product_name;
+                let price = order.price;
+                total.push(order.price);
+                ticket.push({
+                    "productName": productName,
+                    "price": price
+                });
+                console.log(productId, productName, price);
+
+                // Guardamos el detalle de la orden en la tabla orders_details
+                const newOrderDetails = OrderDetails.create({
+                    product_id: productId,
+                    order_id: newOrderId,
+                    product_price: price,
+                    product_name: productName
+                });
+
             });
 
             res.status(200).send({
@@ -465,10 +489,79 @@ app.post('/order', verifySessionStatus, async(req, res) => {
         };
 
     } catch (error) {
-        res.status(404).send("Ocurrió un error: ", error);
+        console.log(error);
+        res.send({
+            status: "400 - Bad Request",
+            msg: "Ocurrió un error! Verifica los datos ingresados e intente nuevamente."
+        });
+    };
+});
+
+// Eliminar orden por id
+app.delete('/order/:id', verifySessionStatus, validateUserPrivilege, async(req, res) => {
+
+    const id = req.params.id;
+    const orderToDelete = await Orders.findOne({ where: { id: `${id}` } });
+
+    if (orderToDelete) {
+        // elimina la orden desde la tabla orders_details
+        let deleteFromOrdersDetails = await OrderDetails.destroy({
+            where: {
+                order_id: id
+            }
+        });
+        // elimina la orden desde la tabla orders
+        let response = await Orders.destroy({
+            where: {
+                id: id
+            }
+        });
+
+        res.status(200).json({ msg: 'La orden fue eliminada correctamente' });
+    } else {
+        res.status(404).json({ msg: "La orden ingresada no existe en el listado." });
+    };
+});
+
+// Obtener orden por ID (Admin Only)
+app.get('/order/:id', verifySessionStatus, validateUserPrivilege, verifyOrderId, async(req, res) => {
+
+    try {
+        const getOrder = await Orders.findAll({ where: { id: req.params.id } });
+        const globalData = await getOrder;
+
+        const getOrderDetails = await OrderDetails.findAll({
+            attributes: ['product_name', 'product_price'],
+            where: {
+                order_id: req.params.id
+            }
+        });
+
+        let order_detail = [];
+
+        const data = getOrderDetails.forEach(element => {
+            let product_name = element.product_name;
+            let product_price = element.product_price;
+            order_detail.push({
+                product_name,
+                product_price
+            })
+        });
+
+        res.status(200).send({
+            resumen: globalData,
+            order_detail
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.send({
+            msg: "Ocurrió un error! Verifica los datos y vuelve a intentarlo"
+        });
     };
 
 });
+
 
 // actualiza el estado del pedido
 app.put('/order_status', verifySessionStatus, validateUserPrivilege, verifyOrderId, acceptedStatuses, async(req, res) => {
@@ -514,13 +607,13 @@ app.get('/my_orders', verifySessionStatus, async(req, res) => {
     const sessionId = currentSession;
 
     try {
-        const OrdersList = await Orders.findAll({
+        const ordersList = await Orders.findAll({
             where: {
                 user_id: sessionId
             }
         });
 
-        res.status(200).send(OrdersList);
+        res.status(200).send(ordersList);
     } catch (error) {
         res.send(error);
     };
